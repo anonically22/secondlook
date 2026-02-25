@@ -17,17 +17,17 @@ const Footer = () => {
                     <div>
                         <h4 className="uppercase text-[10px] tracking-[0.3em] font-bold mb-8 text-charcoal/40">FOLLOW</h4>
                         <div className="flex flex-col gap-2 text-xs font-light">
-                            <a className="hover:text-primary transition-colors" href="#">Instagram</a>
-                            <a className="hover:text-primary transition-colors" href="#">LinkedIn</a>
-                            <a className="hover:text-primary transition-colors" href="#">Behance</a>
+                            <a className="hover:text-primary transition-colors animated-underline w-fit" href="#">Instagram</a>
+                            <a className="hover:text-primary transition-colors animated-underline w-fit" href="#">LinkedIn</a>
+                            <a className="hover:text-primary transition-colors animated-underline w-fit" href="#">Behance</a>
                         </div>
                     </div>
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center border-t border-charcoal/10 pt-10">
                     <p className="text-[10px] tracking-widest text-charcoal/40 uppercase">© 2026 SECOND LOOK STUDIO. ALL RIGHTS RESERVED.</p>
                     <div className="flex gap-8 text-[10px] tracking-widest text-charcoal/40 uppercase mt-4 md:mt-0">
-                        <a className="hover:text-charcoal transition-colors" href="#">Privacy</a>
-                        <a className="hover:text-charcoal transition-colors" href="#">Terms</a>
+                        <a className="hover:text-charcoal transition-colors animated-underline" href="#">Privacy</a>
+                        <a className="hover:text-charcoal transition-colors animated-underline" href="#">Terms</a>
                     </div>
                 </div>
             </div>

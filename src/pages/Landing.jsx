@@ -15,25 +15,41 @@ const Landing = () => {
             <main className="flex flex-col relative">
                 <section className="relative min-h-[80vh] flex flex-col justify-center px-6 md:px-12 py-20 z-10">
                     <div className="max-w-[1400px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
-                        <div className="lg:col-span-8">
+                        <div className="lg:col-span-8 animate-fade-in">
                             <span className="uppercase text-[11px] tracking-[0.3em] font-bold text-primary mb-6 block">Solitary Design Excellence</span>
                             <h1 className="text-6xl md:text-[8rem] leading-[0.9] font-display font-medium mb-8 uppercase tracking-tighter">
                                 I BUILD<br />CRITIQUES<br />OF THE FUTURE
                             </h1>
+                            <p className="font-display text-xl md:text-2xl italic text-charcoal/40 max-w-xl opacity-0 animate-fade-in [animation-delay:400ms]">
+                                Paste a product link to receive an AI-powered UX teardown.
+                            </p>
                         </div>
-                        <div className="lg:col-span-4 pb-4">
+                        <div className="lg:col-span-4 pb-4 animate-fade-in [animation-delay:600ms]">
                             <p className="text-muted-text text-lg leading-relaxed max-w-sm mb-8 font-light">
                                 Second Look is a specialized AI-assisted workflow by an India-based indie dev, applying high-end editorial standards to your digital product's user experience.
                             </p>
-                            <div className="relative max-w-sm">
-                                <input
-                                    className="w-full bg-transparent border-0 border-b border-charcoal/30 py-4 focus:ring-0 focus:border-charcoal transition-all placeholder:text-charcoal/40 outline-none"
-                                    placeholder="ENTER YOUR URL"
-                                    type="text"
-                                />
-                                <button onClick={() => window.location.href = '/analyze'} className="absolute right-0 bottom-4 text-charcoal hover:text-primary transition-colors">
-                                    <span className="material-symbols-outlined">arrow_right_alt</span>
+                            <div className="relative max-w-sm group focus-glow rounded-lg p-2 -m-2 transition-all duration-700">
+                                <div className="animated-underline w-full">
+                                    <input
+                                        className="w-full bg-transparent border-0 border-b border-charcoal/20 py-4 focus:ring-0 focus:border-charcoal transition-all placeholder:text-charcoal/30 outline-none text-sm tracking-widest"
+                                        placeholder="PASTE ANY PRODUCT URL"
+                                        type="text"
+                                    />
+                                </div>
+                                <button onClick={() => window.location.href = '/analyze'} className="absolute right-2 bottom-4 text-charcoal hover:text-primary transition-all duration-500 hover-slide">
+                                    <span className="material-symbols-outlined inline-block transition-transform duration-500">arrow_right_alt</span>
                                 </button>
+                            </div>
+
+                            {/* Tone Selector Preview (Static UI Hint) */}
+                            <div className="mt-8 flex items-center gap-6 opacity-0 animate-fade-in [animation-delay:800ms]">
+                                <span className="text-[10px] tracking-[0.2em] font-bold text-charcoal/30 uppercase">TONE:</span>
+                                <div className="flex gap-4 text-[10px] tracking-widest font-bold text-charcoal/40 uppercase">
+                                    <span className="text-primary border-b border-primary pb-0.5">Casual</span>
+                                    <span className="hover:text-charcoal cursor-pointer transition-colors">Professional</span>
+                                    <span className="hover:text-charcoal cursor-pointer transition-colors">Nerdy</span>
+                                    <span className="hover:text-charcoal cursor-pointer transition-colors">Brutal</span>
+                                </div>
                             </div>
                         </div>
                     </div>

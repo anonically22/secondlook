@@ -38,33 +38,38 @@ const Analyze = () => {
             <Header />
 
             <main className="flex-1 flex flex-col items-center">
-                <section className="w-full max-w-5xl px-6 pt-24 pb-32">
-                    <div className="text-center mb-20">
+                <section className={cn(
+                    "w-full max-w-5xl px-6 pt-24 pb-16 transition-all duration-1000",
+                    isLoading ? "opacity-20 blur-sm pointer-events-none" : "opacity-100"
+                )}>
+                    <div className="text-center mb-20 animate-fade-in">
                         <h1 className="font-display text-7xl md:text-9xl font-light tracking-tight mb-4 leading-none uppercase">
                             Analyze<br />
                             <span className="italic pl-12 md:pl-24 normal-case font-display">Workspace</span>
                         </h1>
                     </div>
 
-                    <div className="max-w-3xl mx-auto">
+                    <div className="max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
                         <div className="flex flex-col gap-12">
-                            <div className="relative group">
-                                <input
-                                    className="w-full h-20 text-3xl font-display bg-transparent border-0 border-b border-charcoal focus:ring-0 focus:border-primary transition-colors placeholder:text-slate-300 outline-none"
-                                    placeholder="Paste website URL here"
-                                    type="text"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                />
+                            <div className="relative group focus-glow rounded-lg p-4 -m-4 transition-all duration-700">
+                                <div className="animated-underline w-full">
+                                    <input
+                                        className="w-full h-20 text-3xl font-display bg-transparent border-0 border-b border-charcoal/20 focus:ring-0 focus:border-charcoal transition-all placeholder:text-slate-300 outline-none"
+                                        placeholder="Paste website URL here"
+                                        type="text"
+                                        value={url}
+                                        onChange={(e) => setUrl(e.target.value)}
+                                    />
+                                </div>
                                 <button
                                     onClick={handleAnalyze}
-                                    className="absolute right-0 bottom-4 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-charcoal transition-colors"
+                                    className="absolute right-4 bottom-8 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-charcoal transition-all duration-500 hover-slide"
                                 >
-                                    Analyze →
+                                    Analyze <span className="material-symbols-outlined align-middle ml-2">arrow_right_alt</span>
                                 </button>
                             </div>
 
-                            <div className="flex flex-col md:flex-row items-baseline gap-8">
+                            <div className="flex flex-col md:flex-row items-baseline gap-8 animate-fade-in [animation-delay:400ms]">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Tone Selection</span>
                                 <div className="flex flex-wrap gap-x-8 gap-y-4">
                                     {tones.map((t) => (
@@ -72,8 +77,8 @@ const Analyze = () => {
                                             key={t}
                                             onClick={() => setTone(t)}
                                             className={cn(
-                                                "text-xs uppercase tracking-widest font-bold transition-all",
-                                                tone === t ? "border-b-2 border-primary text-primary" : "opacity-40 hover:opacity-100"
+                                                "text-xs uppercase tracking-widest font-bold transition-all animated-underline",
+                                                tone === t ? "text-primary after:!w-full" : "opacity-40 hover:opacity-100"
                                             )}
                                         >
                                             {t}
@@ -86,9 +91,17 @@ const Analyze = () => {
                 </section>
 
                 {isLoading && (
-                    <section className="w-full py-32 flex flex-col items-center justify-center space-y-8">
-                        <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                        <p className="font-display text-xl italic opacity-60">Extracting interface DNA...</p>
+                    <section className="w-full py-48 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000">
+                        <div className="relative w-24 h-24">
+                            <div className="absolute inset-0 border border-primary/20 rounded-full"></div>
+                            <div className="absolute inset-0 border-t border-primary rounded-full animate-spin"></div>
+                        </div>
+                        <p className="font-display text-3xl italic text-charcoal/60 animate-pulse">Taking a second look...</p>
+
+                        {/* Placeholder space for report layout */}
+                        <div className="w-full max-w-5xl px-6 opacity-5">
+                            <div className="h-96 bg-charcoal rounded-sm animate-pulse"></div>
+                        </div>
                     </section>
                 )}
 
