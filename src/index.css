@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #C65A4B;
+  --color-terracotta: #C65A4B;
+  --color-cream: #F5F3EF;
+  --color-charcoal: #1A1A1A;
+  --color-muted-text: #6B6B6B;
+
+  --font-display: "Cormorant Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Crimson Pro", serif;
+  --font-space: "Space Grotesk", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-charcoal antialiased;
+    font-family: var(--font-sans);
+  }
+}
+
+@layer utilities {
+  .serif-font {
+    font-family: var(--font-display);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 60s linear infinite;
+}
