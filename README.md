@@ -6,14 +6,14 @@
 
 - **Typography First**: Heavy use of serif display fonts (`Cormorant Garamond`) and clean sans-serifs (`Inter`, `Space Grotesk`).
 - **Editorial Aesthetic**: Focus on "visual void" (whitespace), minimal borders, and a calm, document-like layout.
-- **Micro-interactions**: Subtle motion, typewriter branding animations, and interactive input fields that feel premium and tactile.
+- **Micro-interactions**: Subtle motion, custom **typewriter branding sequence** with animated underlines, and tactile input fields with focus-glow effects.
 
 ## Features
 
-- **Analyze Workspace**: Paste any product URL to trigger a simulated AI-assisted UX audit.
-- **Tone Customization**: select from multiple critique tones (Casual, Professional, Nerdy, Brutal).
-- **Interactive Reports**: Detailed teardowns including summaries, first impressions, and actionable recommendations.
-- **Admin Dashboard**: A minimalist master admin view (available at `/masteradmin`) to track usage metrics and domain inquiries.
+- **Analyze Workspace**: Specialized AI-assisted workflow to map product DNA—from typographic tokens to spatial rhythm.
+- **Tone Personalization**: Select from multiple critique tones (Casual, Professional, Nerdy, Brutal) to match your product's voice.
+- **Museum-Grade Dossier**: Receive exhaustive analyses that define the path to visual and functional excellence.
+- **Master Admin Dashboard**: Minimalist usage tracking and domain monitoring available at `/masteradmin`.
 
 ## Tech Stack
 

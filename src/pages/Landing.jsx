@@ -32,7 +32,7 @@ const Landing = () => {
                                 <div className="animated-underline w-full">
                                     <input
                                         className="w-full bg-transparent border-0 border-b border-charcoal/20 py-4 focus:ring-0 focus:border-charcoal transition-all placeholder:text-charcoal/30 outline-none text-sm tracking-widest"
-                                        placeholder="PASTE ANY PRODUCT URL"
+                                        placeholder="Paste any product URL"
                                         type="text"
                                     />
                                 </div>
@@ -133,16 +133,16 @@ const Landing = () => {
                         SECOND LOOK SECOND LOOK
                     </div>
                     <div className="max-w-[1000px] mx-auto px-6 text-center relative z-10">
-                        <h2 className="text-cream text-5xl md:text-8xl font-display font-medium mb-12 leading-none uppercase tracking-tighter">READY FOR THE<br />NEXT EVOLUTION?</h2>
+                        <h2 className="text-cream text-5xl md:text-8xl font-display font-medium mb-12 leading-none uppercase tracking-tighter">DESIGN IS A<br />SOLITARY CRAFT.</h2>
                         <p className="text-cream/80 text-xl font-light mb-16 max-w-2xl mx-auto">
-                            Join over 2,500 designers and directors who trust our lens to sharpen their digital legacy.
+                            I'm building Second Look to help you see what you might have missed. Let's refine your digital product together, one pixel at a time.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center">
                             <button onClick={() => window.location.href = '/analyze'} className="px-12 py-6 bg-cream text-charcoal uppercase text-xs tracking-[0.2em] font-bold hover:bg-charcoal hover:text-cream transition-all">
-                                START FREE TEARDOWN
+                                ANALYZE A PRODUCT
                             </button>
                             <button className="px-12 py-6 border border-cream/30 text-cream uppercase text-xs tracking-[0.2em] font-bold hover:bg-cream/10 transition-all">
-                                BOOK A CONSULTATION
+                                GET IN TOUCH
                             </button>
                         </div>
                     </div>

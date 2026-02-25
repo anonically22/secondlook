@@ -80,7 +80,7 @@
   }
 }
 
-@keyframes fade-out-underline {
+@keyframes fade-out-slow {
   from {
     opacity: 1;
   }
@@ -90,14 +90,35 @@
   }
 }
 
+@keyframes slide-right {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(10px);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 60s linear infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Branding Typewriter Sequence */
 .typewriter-branding {
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;
   border-right: 2px solid var(--color-primary);
   width: 0;
-  animation: typing 2s steps(20, end) forwards,
-    blink-caret 0.75s step-end infinite;
+  animation:
+    typing 2.5s steps(25, end) forwards,
+    blink-caret 0.75s step-end 4,
+    fade-out-slow 0.8s forwards 6s;
 }
 
 .branding-container {
@@ -112,15 +133,17 @@
   height: 2px;
   background-color: var(--color-primary);
   width: 0;
-  animation: underline-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 2.2s,
-    fade-out-underline 0.8s forwards 5s;
+  animation:
+    underline-draw 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards 2.7s,
+    fade-out-slow 0.8s forwards 6s;
 }
 
+/* Affordance & Micro-interactions */
 .hover-slide:hover span {
   animation: slide-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Animated Underline */
+/* Animated Underline for Links */
 .animated-underline {
   position: relative;
   text-decoration: none;
@@ -142,7 +165,7 @@
   width: 100%;
 }
 
-/* Focus Glow */
+/* Focus Glow Utility */
 .focus-glow {
   transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }

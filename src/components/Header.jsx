@@ -13,7 +13,7 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-12">
                 <nav className="hidden md:flex items-center gap-8 uppercase text-[11px] tracking-widest font-medium">
-                    <Link className="hover:text-primary transition-colors" to="/analyze">Analyze</Link>
+                    <Link className="hover:text-primary transition-colors animated-underline" to="/analyze">Analyze</Link>
                 </nav>
                 <div className="flex gap-4">
                     {/* Minimalist Approach: Navigation reduced as requested */}
