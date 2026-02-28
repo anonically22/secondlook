@@ -73,7 +73,7 @@ module.exports = async (req, res) => {
             const openRouterResponse = await axios.post(
                 'https://openrouter.ai/api/v1/chat/completions',
                 {
-                    model: 'google/gemma-3-4b-it:free',
+                    model: 'mistralai/mistral-7b-instruct:free',
                     messages: [
                         {
                             role: 'user',

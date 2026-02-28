@@ -15,6 +15,7 @@ const Analyze = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showReport, setShowReport] = useState(false);
     const [reportData, setReportData] = useState(null);
+    const [error, setError] = useState(null);
     const reportRef = React.useRef(null);
 
     // Scroll to report when it becomes visible
@@ -73,12 +74,15 @@ const Analyze = () => {
                     summary: data.summary,
                     firstImpression: data.firstImpression
                 });
+                setError(null);
             } else {
                 console.error("API Error:", data.message);
+                setError(data.message.includes('429') ? "AI Tier Busy (Rate Limited)" : data.message);
                 setReportData(mockFallback);
             }
         } catch (error) {
             console.error("Fetch Error:", error);
+            setError("Network Error: Unable to reach analysis engine.");
             setReportData(mockFallback);
         } finally {
             setIsLoading(false);
@@ -133,6 +137,12 @@ const Analyze = () => {
                                     Analyze <span className="material-symbols-outlined align-middle ml-2">arrow_right_alt</span>
                                 </button>
                             </div>
+
+                            {error && (
+                                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-[10px] font-black uppercase tracking-[0.2em] animate-fade-in text-center">
+                                    [#] {error} — Reverting to Cached Analysis
+                                </div>
+                            )}
 
                             <div className="flex flex-col md:flex-row items-baseline gap-8 animate-fade-in [animation-delay:400ms]">
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Tone Selection</span>
