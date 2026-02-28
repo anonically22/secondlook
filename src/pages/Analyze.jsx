@@ -72,7 +72,8 @@ const Analyze = () => {
                     id: Math.random().toString(36).substring(7).toUpperCase(),
                     timestamp: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase(),
                     summary: data.summary,
-                    firstImpression: data.firstImpression
+                    firstImpression: data.firstImpression,
+                    url: url // Store original URL for preview
                 });
                 setError(null);
             } else {
@@ -206,23 +207,19 @@ const Analyze = () => {
                                             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-charcoal/40">Interface Scan / Active</span>
                                         </div>
 
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="relative text-center">
-                                                <span className="material-symbols-outlined text-charcoal/5 text-[12rem] group-hover:scale-110 transition-transform duration-[2000ms] ease-out">
-                                                    filter_center_focus
-                                                </span>
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <span className="material-symbols-outlined text-primary/20 text-4xl animate-pulse">analytics</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Functional Image - subtly integrated */}
+                                        {/* Functional Image - dynamic live preview from Microlink */}
                                         <img
-                                            className="w-full h-full object-cover grayscale opacity-10 mix-blend-multiply transition-all duration-[2000ms] scale-105 group-hover:scale-100"
-                                            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
-                                            alt="" // Empty alt to avoid broken image text if failed
-                                            onError={(e) => e.target.style.display = 'none'}
+                                            className="w-full h-full object-cover grayscale-[0.5] hover:grayscale-0 transition-all duration-[2000ms] scale-105 group-hover:scale-100"
+                                            src={`https://api.microlink.io?url=${encodeURIComponent(reportData.url)}&screenshot=true&embed=screenshot.url&waitFor=5000`}
+                                            alt={`Live preview of ${reportData.siteName}`}
+                                            onLoad={(e) => {
+                                                e.target.style.opacity = '1';
+                                                e.target.previousElementSibling.style.display = 'none'; // Hide placeholder icon
+                                            }}
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                            }}
+                                            style={{ opacity: 0, transition: 'opacity 1s ease-in' }}
                                         />
 
                                         {/* Scanning Overlay UI */}

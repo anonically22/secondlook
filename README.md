@@ -38,7 +38,6 @@
 3. **Explore**:
    - Landing: `http://localhost:5173/`
    - Analyze: `http://localhost:5173/analyze`
-   - Master Admin: `http://localhost:5173/masteradmin`
 
 ## 🇮🇳 Project Context
 
