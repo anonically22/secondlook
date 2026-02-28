@@ -12,17 +12,21 @@ async function test() {
 
     const mockRes = {
         status: (code) => {
-            console.log('Status:', code);
+            console.log('\n[DEBUG] Status Code:', code);
             return mockRes;
         },
         json: (data) => {
-            console.log('Response JSON:', JSON.stringify(data, null, 2));
+            console.log('\n[DEBUG] Response Body:', JSON.stringify(data, null, 2));
             return mockRes;
         }
     };
 
     console.log('Testing /api/analyze with https://example.com...');
-    await analyze(mockReq, mockRes);
+    try {
+        await analyze(mockReq, mockRes);
+    } catch (err) {
+        console.error('\n[FATAL] Script Error:', err);
+    }
 }
 
 test().catch(console.error);

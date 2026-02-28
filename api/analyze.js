@@ -37,25 +37,40 @@ module.exports = async (req, res) => {
     }
 
     try {
-        // 3. Fetch HTML content
-        const response = await axios.get(url, {
-            timeout: 5000,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        });
+        // 3. Fetch HTML content with enhanced headers to avoid 403s
+        let response;
+        try {
+            response = await axios.get(url, {
+                timeout: 8000,
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache',
+                    'Referer': 'https://www.google.com/'
+                }
+            });
+        } catch (fetchError) {
+            console.error('Scraping Error:', fetchError.message);
+            return res.status(403).json({
+                success: false,
+                message: 'This website blocks automated analysis. Try a different URL.'
+            });
+        }
 
         const html = response.data;
         const $ = cheerio.load(html);
 
         // 4. Extract metadata
-        const title = $('title').text() || $('meta[property="og:title"]').attr('content') || '';
+        const title = $('title').text() || $('meta[property="og:title"]').attr('content') || $('h1').first().text() || '';
         const description = $('meta[name="description"]').attr('content') || $('meta[property="og:description"]').attr('content') || '';
 
         if (!title && !description) {
             return res.status(422).json({
                 success: false,
-                message: 'Unable to extract meaningful metadata from this URL'
+                message: 'Unable to extract meaningful metadata from this site.'
             });
         }
 
@@ -73,7 +88,7 @@ module.exports = async (req, res) => {
             const openRouterResponse = await axios.post(
                 'https://openrouter.ai/api/v1/chat/completions',
                 {
-                    model: 'mistralai/mistral-7b-instruct:free',
+                    model: 'google/gemma-3-4b-it:free',
                     messages: [
                         {
                             role: 'user',
