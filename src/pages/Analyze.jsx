@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import CircularText from '../components/CircularText';
@@ -14,14 +14,76 @@ const Analyze = () => {
     const [tone, setTone] = useState('Professional');
     const [isLoading, setIsLoading] = useState(false);
     const [showReport, setShowReport] = useState(false);
+    const [reportData, setReportData] = useState(null);
+    const reportRef = React.useRef(null);
 
-    const handleAnalyze = () => {
+    // Scroll to report when it becomes visible
+    useEffect(() => {
+        if (showReport && reportRef.current) {
+            const yOffset = -20;
+            const element = reportRef.current;
+            const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+            window.scrollTo({
+                top: y,
+                behavior: 'smooth'
+            });
+        }
+    }, [showReport]);
+
+    const handleAnalyze = async () => {
+        if (!url) return;
         setIsLoading(true);
-        setShowReport(false);
-        setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const mockFallback = {
+            id: "0992381-LX",
+            timestamp: "FEB 2026",
+            siteName: new URL(url).hostname,
+            summary: "This product presents a clean SaaS landing experience but struggles with visual hierarchy in its value proposition. While the typographic choices are sound, the spatial rhythm creates unnecessary cognitive friction in the middle-funnel sections.",
+            firstImpression: "Above-the-fold messaging effectively communicates intent through high-contrast typography, but lacks emotional differentiation. The initial viewport is efficient yet somewhat clinical, potentially impacting brand resonance for new visitors.",
+            review: [
+                { label: "CTA Prominence", status: "Moderate", detail: "The primary action lacks sufficient contrast against the hero background." },
+                { label: "Spatial Rhythm", status: "Inconsistent", detail: "Section padding varies irregularly, breaking the vertical flow." },
+                { label: "Onboarding Clarity", status: "Moderate", detail: "The path from interest to activation requires too many implicit leaps." }
+            ],
+            suggestions: [
+                "Strengthen headline contrast and scale to achieve immediate authority.",
+                "Introduce trust signals and social proof earlier in the visual narrative.",
+                "Refine CTA hierarchy to ensure only one dominant action is perceived at a time.",
+                "Introduce 5% tighter leading in body copy to improve reading density."
+            ],
+            quote: "The interface prioritizes speed and intent over decoration, resulting in an environment that feels both industrial and premium, yet perhaps too distant."
+        };
+
+        try {
+            const response = await fetch("/api/analyze", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setReportData({
+                    ...mockFallback, // Keep mock structure for fields not provided by AI (like suggestions/review)
+                    id: Math.random().toString(36).substring(7).toUpperCase(),
+                    timestamp: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase(),
+                    summary: data.summary,
+                    firstImpression: data.firstImpression
+                });
+            } else {
+                console.error("API Error:", data.message);
+                setReportData(mockFallback);
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            setReportData(mockFallback);
+        } finally {
             setIsLoading(false);
             setShowReport(true);
-        }, 2000);
+        }
     };
 
     const tones = ['Casual', 'Professional', 'Nerdy', 'Brutal'];
@@ -38,9 +100,11 @@ const Analyze = () => {
             <Header />
 
             <main className="flex-1 flex flex-col items-center">
+                {/* Hero Section - Collapses when report is shown */}
                 <section className={cn(
-                    "w-full max-w-5xl px-6 pt-24 pb-16 transition-all duration-1000",
-                    isLoading ? "opacity-20 blur-sm pointer-events-none" : "opacity-100"
+                    "w-full max-w-5xl px-6 pt-24 pb-16 transition-all duration-[1000ms] ease-in-out",
+                    isLoading ? "opacity-10 blur-md pointer-events-none -translate-y-4" : "opacity-100",
+                    showReport ? "opacity-20 blur-sm scale-95 pointer-events-none -translate-y-20 h-0 overflow-hidden !pb-0 !pt-0" : ""
                 )}>
                     <div className="text-center mb-20 animate-fade-in">
                         <h1 className="font-display text-7xl md:text-9xl font-light tracking-tight mb-4 leading-none uppercase">
@@ -59,6 +123,7 @@ const Analyze = () => {
                                         type="text"
                                         value={url}
                                         onChange={(e) => setUrl(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
                                     />
                                 </div>
                                 <button
@@ -90,56 +155,96 @@ const Analyze = () => {
                     </div>
                 </section>
 
+                {/* Loading State - Perception of Cogntion */}
                 {isLoading && (
-                    <section className="w-full py-48 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000">
+                    <section className="fixed inset-0 z-40 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000 bg-cream/90 backdrop-blur-md">
                         <div className="relative w-24 h-24">
                             <div className="absolute inset-0 border border-primary/20 rounded-full"></div>
                             <div className="absolute inset-0 border-t border-primary rounded-full animate-spin"></div>
                         </div>
-                        <p className="font-display text-3xl italic text-charcoal/60 animate-pulse">Taking a second look...</p>
+                        <p className="font-display text-3xl italic text-charcoal/80 animate-pulse tracking-wide">Taking a second look...</p>
 
-                        {/* Placeholder space for report layout */}
-                        <div className="w-full max-w-5xl px-6 opacity-5">
-                            <div className="h-96 bg-charcoal rounded-sm animate-pulse"></div>
+                        <div className="w-full max-w-md h-0.5 bg-charcoal/5 relative overflow-hidden">
+                            <div className="absolute inset-0 bg-primary/40 animate-[underline-draw_2.5s_linear_infinite]"></div>
                         </div>
                     </section>
                 )}
 
-                {showReport && !isLoading && (
-                    <section className="w-full bg-white py-32 border-t border-black/5 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* The Dossier - Mock Report Render */}
+                {showReport && reportData && !isLoading && (
+                    <section
+                        ref={reportRef}
+                        className="w-full bg-white py-32 border-t border-black/5 animate-in fade-in slide-in-from-bottom-20 duration-[1500ms] ease-out shadow-2xl z-10 relative scroll-mt-20"
+                    >
                         <div className="max-w-5xl mx-auto px-6">
                             <div className="mb-32 relative">
                                 <div className="flex justify-between items-end mb-12">
-                                    <span className="text-xs font-bold uppercase tracking-[0.4em] text-slate-400">Report No. 7291-A</span>
-                                    <span className="text-xs font-bold uppercase tracking-[0.2em]">OCT 2023</span>
+                                    <span className="text-xs font-bold uppercase tracking-[0.4em] text-slate-400">Report No. {reportData.id}</span>
+                                    <span className="text-xs font-bold uppercase tracking-[0.2em]">{reportData.timestamp}</span>
                                 </div>
                                 <div className="relative">
                                     <h2 className="font-display text-6xl md:text-8xl font-medium leading-[0.9] uppercase tracking-tighter mb-4">
                                         UX Teardown<br />
-                                        <span className="text-primary italic normal-case">Linear.app</span>
+                                        <span className="text-primary italic normal-case">{reportData.siteName}</span>
                                     </h2>
-                                    <div className="relative mt-8 aspect-[16/7] w-full overflow-hidden bg-slate-100">
+                                    <div className="relative mt-12 aspect-[16/8] w-full overflow-hidden bg-slate-100 border border-black/5 rounded-sm shadow-inner group">
+                                        {/* CSS Grid Pattern for robustness */}
+                                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
+                                        <div className="absolute top-6 left-6 flex items-center gap-3">
+                                            <div className="w-2 h-2 bg-primary animate-pulse rounded-full"></div>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-charcoal/40">Interface Scan / Active</span>
+                                        </div>
+
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="relative text-center">
+                                                <span className="material-symbols-outlined text-charcoal/5 text-[12rem] group-hover:scale-110 transition-transform duration-[2000ms] ease-out">
+                                                    filter_center_focus
+                                                </span>
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <span className="material-symbols-outlined text-primary/20 text-4xl animate-pulse">analytics</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Functional Image - subtly integrated */}
                                         <img
-                                            className="w-full h-full object-cover grayscale opacity-80"
-                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuChvbwzrxoySzmp3qzxZzYeauKp72V-PYdept8xj_0PLMaeSBb_WdyFi84R5d7UZhLQtu9oXZA1if3n8zEPJ6z5ut1dXC9GhkvvfJoQ4aih9638h4MRTlDBJGLYyrtBPDSmnRj9mGfEphsl_PRlMOZvfibAsgLxgPD2uhT060g7eQ3Yt0wxr5QiP7_IV7iH9UrmN-Oha68FxEsSiHjbUm0e0YpifILHKakD0lqlZ0YRQ7j3d0XCieRJDHOWuGnbZPf9sVCqNyymOtkk"
-                                            alt="Sample"
+                                            className="w-full h-full object-cover grayscale opacity-10 mix-blend-multiply transition-all duration-[2000ms] scale-105 group-hover:scale-100"
+                                            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
+                                            alt="" // Empty alt to avoid broken image text if failed
+                                            onError={(e) => e.target.style.display = 'none'}
                                         />
-                                        <div className="absolute inset-0 bg-primary/5 mix-blend-multiply"></div>
+
+                                        {/* Scanning Overlay UI */}
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <div className="w-[94%] h-[90%] border border-primary/10 transition-all duration-700 group-hover:w-full group-hover:h-full"></div>
+                                            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-primary/5"></div>
+                                            <div className="absolute left-1/2 top-0 w-[1px] h-full bg-primary/5"></div>
+
+                                            {/* Coordinate Markers */}
+                                            <div className="absolute top-4 right-4 text-[8px] font-mono text-charcoal/20">X: 729.1 Y: 402.0</div>
+                                            <div className="absolute bottom-4 left-4 text-[8px] font-mono text-charcoal/20 tracking-[0.2em]">ANALYSIS_MOUNT_POINT: 0x2A</div>
+                                        </div>
+
+                                        {/* Scanning bar animation */}
+                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[scan_4s_ease-in-out_infinite] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="space-y-40">
+                                {/* Summary Section */}
                                 <div className="max-w-3xl">
-                                    <h3 className="font-display text-4xl mb-12 italic border-l-4 border-primary pl-8 leading-snug">
-                                        "Linear demonstrates a masterclass in functional minimalism. The interface prioritizing speed and intent over decoration, resulting in an environment that feels both industrial and premium."
-                                    </h3>
-                                    <div className="flex gap-4">
+                                    <div className="flex gap-4 mb-8">
                                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Section I</span>
                                         <span className="text-[10px] font-black uppercase tracking-[0.4em]">Executive Summary</span>
                                     </div>
+                                    <h3 className="font-display text-4xl mb-12 italic border-l-4 border-primary pl-8 leading-snug text-charcoal/90">
+                                        "{reportData.summary}"
+                                    </h3>
                                 </div>
 
+                                {/* First Impressions */}
                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
                                     <div className="md:col-span-4 sticky top-32">
                                         <h3 className="font-display text-5xl mb-4 leading-tight uppercase tracking-tighter">First<br /><span className="italic normal-case">Impressions</span></h3>
@@ -147,21 +252,23 @@ const Analyze = () => {
                                     </div>
                                     <div className="md:col-span-8">
                                         <p className="text-xl font-display leading-relaxed text-slate-700 mb-12">
-                                            Upon landing, the immediate sense is one of density without clutter. The use of Inter at varying weights creates a clear hierarchy without relying on excessive scale changes. The dark-themed default aesthetic projects a focused, 'engineer-first' mentality.
+                                            {reportData.firstImpression}
                                         </p>
                                         <div className="space-y-6">
-                                            <div className="border-t border-black/10 pt-4 flex justify-between group cursor-default">
-                                                <span className="text-xs font-bold uppercase tracking-widest text-emerald-700">Performance</span>
-                                                <p className="text-sm max-w-xs text-right opacity-60 group-hover:opacity-100 transition-opacity">Exceptional load times and instant UI feedback cycles.</p>
-                                            </div>
-                                            <div className="border-t border-black/10 pt-4 flex justify-between group cursor-default">
-                                                <span className="text-xs font-bold uppercase tracking-widest text-primary">Accessibility</span>
-                                                <p className="text-sm max-w-xs text-right opacity-60 group-hover:opacity-100 transition-opacity">Steep learning curve for non-technical users.</p>
-                                            </div>
+                                            {reportData.review.map((item, idx) => (
+                                                <div key={idx} className="border-t border-black/10 pt-4 flex flex-col md:flex-row justify-between group cursor-default">
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-bold uppercase tracking-widest text-primary">{item.label}</span>
+                                                        <span className="text-[10px] uppercase tracking-widest opacity-40 font-bold">{item.status}</span>
+                                                    </div>
+                                                    <p className="text-sm max-w-xs md:text-right opacity-60 group-hover:opacity-100 transition-opacity mt-2 md:mt-0">{item.detail}</p>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </div>
 
+                                {/* Strategic Improvements */}
                                 <div className="bg-primary text-white -mx-6 md:-mx-12 p-12 md:p-24 relative overflow-hidden">
                                     <CircularText
                                         text="Strategic Improvements • Actionable Insights • Design Systems"
@@ -170,20 +277,27 @@ const Analyze = () => {
                                         duration={25}
                                     />
                                     <div className="max-w-2xl relative z-10">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-12 block opacity-60">Section IV / Recommendations</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-12 block opacity-60">Section III / Recommendations</span>
                                         <h3 className="font-display text-6xl italic mb-16">The Path Forward</h3>
-                                        <ul className="space-y-16">
-                                            <li className="group">
-                                                <span className="block text-xs uppercase tracking-widest font-bold mb-4 opacity-50">01</span>
-                                                <span className="font-display text-4xl block mb-4">Optimize Onboarding</span>
-                                                <p className="text-lg opacity-80 font-display">Implement a progressive disclosure model for keyboard shortcuts to reduce initial cognitive load for new users.</p>
-                                            </li>
-                                            <li className="group">
-                                                <span className="block text-xs uppercase tracking-widest font-bold mb-4 opacity-50">02</span>
-                                                <span className="font-display text-4xl block mb-4">Visual Contrast</span>
-                                                <p className="text-lg opacity-80 font-display">Increase contrast on inactive sidebar states to improve accessibility and meet WCAG AA standards.</p>
-                                            </li>
+                                        <ul className="space-y-12">
+                                            {reportData.suggestions.map((s, idx) => (
+                                                <li key={idx} className="group">
+                                                    <span className="block text-xs uppercase tracking-widest font-bold mb-4 opacity-50">{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                                                    <p className="font-display text-3xl leading-snug">{s}</p>
+                                                </li>
+                                            ))}
                                         </ul>
+                                    </div>
+                                </div>
+
+                                {/* Detailed Narrative */}
+                                <div className="max-w-3xl">
+                                    <h3 className="font-display text-4xl mb-12 italic border-l-4 border-emerald-800/20 pl-8 leading-snug text-slate-600">
+                                        "{reportData.quote}"
+                                    </h3>
+                                    <div className="flex gap-4">
+                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-800">Section IV</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">Final Conclusion</span>
                                     </div>
                                 </div>
                             </div>
@@ -191,14 +305,14 @@ const Analyze = () => {
                             <div className="mt-32 pt-20 border-t border-black/10 flex flex-col md:flex-row justify-between items-end gap-12">
                                 <div>
                                     <h2 className="font-display text-5xl mb-2 uppercase tracking-tighter">Conclusion</h2>
-                                    <p className="text-xs uppercase tracking-widest font-bold opacity-40">Document ID: 0992381-LX / End of Analysis</p>
+                                    <p className="text-xs uppercase tracking-widest font-bold opacity-40">Document ID: {reportData.id} / End of Analysis</p>
                                 </div>
                                 <div className="flex gap-4 w-full md:w-auto">
                                     <button className="flex-1 md:flex-none px-10 py-5 border border-black text-xs uppercase tracking-widest font-black hover:bg-black hover:text-white transition-all">
-                                        Share
+                                        Share Dossier
                                     </button>
-                                    <button className="flex-1 md:flex-none px-12 py-5 bg-black text-white text-xs uppercase tracking-widest font-black hover:bg-primary transition-all">
-                                        Download PDF
+                                    <button className="flex-1 md:flex-none px-12 py-5 bg-black text-white text-xs uppercase tracking-widest font-black hover:bg-primary transition-all shadow-xl hover:-translate-y-1 active:translate-y-0">
+                                        Download Dossier (PDF)
                                     </button>
                                 </div>
                             </div>

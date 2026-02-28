@@ -90,6 +90,18 @@
   }
 }
 
+@keyframes scan {
+
+  0%,
+  100% {
+    top: 0;
+  }
+
+  50% {
+    top: 100%;
+  }
+}
+
 @keyframes slide-right {
   from {
     transform: translateX(0);
