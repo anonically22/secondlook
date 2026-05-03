@@ -1,33 +1,35 @@
 # Second Look
 
-**Second Look** is a typography-focused, AI-powered UX teardown tool designed for a cinematic and editorial reading experience. Built by a solo indie developer from India, it applies high-end graphic design standards and cognitive psychology principles to digital product critiques.
+**Second Look** is a **Component Intelligence Platform** that audits interface systems for structural integrity and design drift. Moving beyond generic UX teardowns, it provides infrastructure-grade analysis of component consistency, duplication, and hierarchy.
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://secondlook-two.vercel.app/)
 
-## Design Philosophy
+## 🚀 The Component Audit Engine (Phase 4)
 
-- **Typography First**: Heavy use of serif display fonts (`Cormorant Garamond`) and clean sans-serifs (`Inter`, `Space Grotesk`).
-- **Editorial Aesthetic**: Focus on "visual void" (whitespace), minimal borders, and a calm, document-like layout.
-- **Micro-interactions**: Subtle motion, custom **typewriter branding sequence** with animated underlines, and tactile input fields with focus-glow effects.
+Second Look now features a sophisticated backend architecture designed to analyze entire product systems rather than isolated pages.
+
+- **Multi-Page Intelligence**: BFS-based crawler that maps up to 5 internal pages per domain to identify system-wide patterns.
+- **Cross-Page Registry**: Tracks every button, card, and input variant across the entire product lifecycle to detect global inconsistencies.
+- **Design Drift Detection**: Deterministic comparison engine that flags mismatched button systems, navigation gaps, and hierarchy breakdowns.
+- **AI Interpretation**: Uses **Mistral-7B (via OpenRouter)** to interpret structured technical findings into high-level executive summaries and recommendations.
+- **Product Memory**: Integrated with **Supabase** to persist audit reports, score history, and domain monitoring.
 
 ## Features
 
-- **Analyze Workspace**: Specialized AI-assisted workflow to map product DNA—from typographic tokens to spatial rhythm.
-- **Tone Personalization**: Select from multiple critique tones (Casual, Professional, Nerdy, Brutal) to match your product's voice.
-- **AI-Powered Insights**: Leveraging **Google Gemma (via OpenRouter)** for deep, context-aware UX audits and heuristic evaluations.
+- **Analyze Workspace**: Specialized workflow to map product DNA—from typographic tokens to spatial rhythm.
+- **Component Audit**: Automated detection of UI elements (buttons, links, forms, inputs, headings) with deterministic counts.
+- **Heuristic Scorecard**: 1-10 scoring across Component Consistency, Spacing Integrity, Hierarchy Clarity, Accessibility Health, and Duplication Index.
+- **Tone Personalization**: Select from multiple critique tones (Professional, Nerdy, Brutal) to match your brand's voice.
 - **Live Preview Integration**: Real-time website snapshots via **Microlink API**.
-- **Museum-Grade Dossier**: Receive exhaustive analyses that define the path to visual and functional excellence.
-- **Master Admin Dashboard**: Minimalist usage tracking and domain monitoring available at `/masteradmin`.
 
 ## Tech Stack
 
-- **Framework**: React 19 + Vite
-- **AI Engine**: Google Gemma 3 (via OpenRouter API)
-- **Styling**: Tailwind CSS v4 (using the `@tailwindcss/vite` plugin)
+- **Frontend**: React 19 + Vite + Tailwind CSS v4
+- **Backend**: Vercel Serverless Functions (Node.js)
+- **Database**: Supabase (Product Memory Layer)
+- **AI Engine**: Mistral-7B-Instruct (via OpenRouter API)
+- **Analysis Tools**: Cheerio + Axios for DOM crawling and pattern detection
 - **Routing**: React Router v7
-- **Icons**: Lucide React & Google Material Symbols
-- **Data Scraping**: Cheerio + Axios for meta-tag extraction
-- **Fonts**: Google Fonts (Inter, Cormorant Garamond, Crimson Pro, Space Grotesk)
 
 ## Getting Started
 
@@ -37,19 +39,21 @@
    ```
 
 2. **Environment Setup**:
-   Create a `.env` or `.env.local` file and add your API keys:
+   Create a `.env.local` file with the following:
    ```env
-   OPENROUTER_API_KEY=your_openrouter_key
+   OPENROUTER_API_KEY=your_key
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_key
    ```
 
 3. **Run Development Server**:
    ```bash
+   # Run frontend only
    npm run dev
+   
+   # Run full stack (requires Vercel CLI)
+   npm run dev:all
    ```
-
-4. **Explore**:
-   - Landing: `http://localhost:5173/`
-   - Analyze: `http://localhost:5173/analyze`
 
 ## 🇮🇳 Project Context
 

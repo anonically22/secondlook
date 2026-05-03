@@ -1,145 +1,100 @@
-const axios = require('axios');
-const cheerio = require('cheerio');
+const { crawl } = require('../lib/crawler');
+const { buildRegistry } = require('../lib/registry');
+const { compareVariants } = require('../lib/comparator');
+const { generateScores } = require('../lib/scorer');
+const { interpretResults } = require('../lib/interpreter');
+const { saveAudit } = require('../lib/supabase');
 
-// Only load dotenv and disable SSL verification in non-production/local environments
-if (!process.env.VERCEL) {
-    require('dotenv').config({ path: '.env.local' });
-    // Disable SSL verification for development to avoid local issuer certificate issues
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-}
+module.exports = async function handler(req, res) {
+  // CORS configuration
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
 
-module.exports = async (req, res) => {
-    // 1. Only allow POST
-    if (req.method !== 'POST') {
-        return res.status(405).json({
-            success: false,
-            message: 'Method not allowed'
-        });
-    }
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-    const { url } = req.body;
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-    // 2. Validate URL
+  try {
+    const { url } = req.body || {};
+
     if (!url) {
-        return res.status(400).json({
-            success: false,
-            message: 'URL is required'
-        });
+      return res.status(400).json({ error: 'URL is required' });
     }
 
+    let targetUrl = url;
+    if (!/^https?:\/\//i.test(targetUrl)) {
+      targetUrl = 'https://' + targetUrl;
+    }
+
+    let domain;
     try {
-        new URL(url);
-    } catch (err) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid URL format'
-        });
+      domain = new URL(targetUrl).hostname;
+    } catch (e) {
+      return res.status(400).json({ error: 'Invalid URL provided' });
     }
 
-    try {
-        // 3. Fetch HTML content with enhanced headers to avoid 403s
-        let response;
-        try {
-            response = await axios.get(url, {
-                timeout: 8000,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                    'Accept-Language': 'en-US,en;q=0.9',
-                    'Accept-Encoding': 'gzip, deflate, br',
-                    'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache',
-                    'Referer': 'https://www.google.com/'
-                }
-            });
-        } catch (fetchError) {
-            console.error('Scraping Error:', fetchError.message);
-            return res.status(403).json({
-                success: false,
-                message: 'This website blocks automated analysis. Try a different URL.'
-            });
-        }
-
-        const html = response.data;
-        const $ = cheerio.load(html);
-
-        // 4. Extract metadata
-        const title = $('title').text() || $('meta[property="og:title"]').attr('content') || $('h1').first().text() || '';
-        const description = $('meta[name="description"]').attr('content') || $('meta[property="og:description"]').attr('content') || '';
-
-        if (!title && !description) {
-            return res.status(422).json({
-                success: false,
-                message: 'Unable to extract meaningful metadata from this site.'
-            });
-        }
-
-        // 5. OpenRouter API Logic
-        const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-
-        if (!openRouterApiKey || openRouterApiKey === 'DUMMY_OPENROUTER_KEY_REPLACE_LATER') {
-            return res.status(500).json({
-                success: false,
-                message: 'OpenRouter API key is not configured'
-            });
-        }
-
-        try {
-            const openRouterResponse = await axios.post(
-                'https://openrouter.ai/api/v1/chat/completions',
-                {
-                    model: 'google/gemma-3-4b-it:free',
-                    messages: [
-                        {
-                            role: 'user',
-                            content: `You are a UX critic generating thoughtful product teardowns. 
-                            
-                            Based on this website content, generate a concise product summary and first impression UX critique in a thoughtful editorial tone.
-                            
-                            Title: ${title}
-                            Description: ${description}
-                            
-                            Return the response in JSON format with exactly these two keys: "summary" and "firstImpression". Do not include any other text or markdown formatting outside the JSON.`
-                        }
-                    ]
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${openRouterApiKey}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            const resultText = openRouterResponse.data.choices[0].message.content;
-
-            // Clean up backticks if model returns them
-            const cleanedJson = resultText.replace(/```json|```/g, '').trim();
-            const aiData = JSON.parse(cleanedJson);
-
-            // 6. Return structured JSON
-            return res.status(200).json({
-                success: true,
-                summary: aiData.summary,
-                firstImpression: aiData.firstImpression
-            });
-
-        } catch (aiError) {
-            console.error('AI Error Detailed:', aiError.response?.data || aiError.message);
-            throw new Error(`AI analysis failed: ${aiError.message}`);
-        }
-
-    } catch (error) {
-        console.error('API Error:', error.message);
-        if (error.response) {
-            console.error('Error Status:', error.response.status);
-            console.error('Error Data:', error.response.data);
-        }
-
-        return res.status(500).json({
-            success: false,
-            message: `Analysis failed: ${error.message}`,
-            debug: error.stack
-        });
+    // 1. Crawl multiple internal pages (max 5)
+    const pages = await crawl(targetUrl, 5);
+    
+    if (!pages || pages.length === 0) {
+      return res.status(400).json({ error: 'Could not crawl the provided URL.' });
     }
+
+    // 2. Build product-wide component registry
+    const registry = buildRegistry(pages);
+
+    // 3. Compare variants & detect design drift
+    const driftFindings = compareVariants(registry);
+
+    // 4. Generate system-level heuristic scores
+    const scorecard = generateScores(registry.globalInventory, {
+      buttonVariants: registry.systemVariantsCount.buttons,
+      cardVariants: registry.systemVariantsCount.cards,
+      inputVariants: registry.systemVariantsCount.inputs
+    });
+
+    const structuredData = {
+      domain,
+      pagesCrawled: pages.map(p => p.url),
+      registry,
+      driftFindings,
+      scorecard
+    };
+
+    // 5. AI Interpretation (Product Level)
+    const aiAnalysis = await interpretResults(structuredData);
+
+    // 6. Assemble final structured report
+    const finalAudit = {
+      domain,
+      pages_crawled: pages.length,
+      executiveSummary: aiAnalysis.executiveSummary || "",
+      inventory: registry.globalInventory,
+      scorecard: scorecard,
+      findings: [...driftFindings, ...(aiAnalysis.findings || [])],
+      recommendations: aiAnalysis.recommendations || []
+    };
+
+    // 7. Save to Supabase Product Memory
+    await saveAudit(finalAudit);
+
+    res.status(200).json(finalAudit);
+  } catch (error) {
+    console.error("Analyze API Error:", error);
+    res.status(500).json({ 
+      error: error.message || 'Internal Server Error',
+      executiveSummary: "Audit failed due to a server error.",
+      inventory: {},
+      scorecard: {},
+      findings: [],
+      recommendations: []
+    });
+  }
 };
