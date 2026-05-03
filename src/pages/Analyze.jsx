@@ -38,8 +38,8 @@ const Analyze = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         const mockFallback = {
-            id: "0992381-LX",
-            timestamp: "FEB 2026",
+            id: "SL-AUDIT-0992",
+            timestamp: "MAY 2026",
             siteName: new URL(url).hostname,
             summary: "This product presents a clean SaaS landing experience but struggles with visual hierarchy in its value proposition. While the typographic choices are sound, the spatial rhythm creates unnecessary cognitive friction in the middle-funnel sections.",
             firstImpression: "Above-the-fold messaging effectively communicates intent through high-contrast typography, but lacks emotional differentiation. The initial viewport is efficient yet somewhat clinical, potentially impacting brand resonance for new visitors.",
@@ -68,23 +68,23 @@ const Analyze = () => {
 
             if (data.success) {
                 setReportData({
-                    ...mockFallback, // Keep mock structure for fields not provided by AI (like suggestions/review)
-                    id: Math.random().toString(36).substring(7).toUpperCase(),
+                    ...mockFallback, 
+                    id: `SL-AUDIT-${Math.random().toString(36).substring(7).toUpperCase()}`,
                     timestamp: new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' }).toUpperCase(),
                     summary: data.summary,
                     firstImpression: data.firstImpression,
-                    url: url // Store original URL for preview
+                    url: url 
                 });
                 setError(null);
             } else {
                 console.error("API Error:", data.message);
                 setError(data.message.includes('429') ? "AI Tier Busy (Rate Limited)" : data.message);
-                setReportData(mockFallback);
+                setReportData({ ...mockFallback, url: url });
             }
         } catch (error) {
             console.error("Fetch Error:", error);
             setError("Network Error: Unable to reach analysis engine.");
-            setReportData(mockFallback);
+            setReportData({ ...mockFallback, url: url });
         } finally {
             setIsLoading(false);
             setShowReport(true);
@@ -94,37 +94,38 @@ const Analyze = () => {
     const tones = ['Casual', 'Professional', 'Nerdy', 'Brutal'];
 
     return (
-        <div className="relative flex min-h-screen flex-col bg-cream text-charcoal font-sans selection:bg-primary selection:text-white overflow-x-hidden">
+        <div className="relative flex min-h-screen flex-col bg-ink text-cream font-sans selection:bg-primary selection:text-cream overflow-x-hidden">
             <CircularText
-                text="SECOND LOOK UI/UX CRITIQUES"
-                className="fixed top-20 -right-20 opacity-10"
-                size={240}
-                duration={20}
+                text="SECOND LOOK COMPONENT INTELLIGENCE"
+                className="fixed top-32 -right-20 opacity-5 z-0"
+                size={280}
+                duration={30}
             />
 
             <Header />
 
-            <main className="flex-1 flex flex-col items-center">
+            <main className="flex-1 flex flex-col items-center relative z-10">
                 {/* Hero Section - Collapses when report is shown */}
                 <section className={cn(
-                    "w-full max-w-5xl px-6 pt-24 pb-16 transition-all duration-[1000ms] ease-in-out",
+                    "w-full max-w-6xl px-6 pt-32 pb-16 transition-all duration-[1000ms] ease-in-out",
                     isLoading ? "opacity-10 blur-md pointer-events-none -translate-y-4" : "opacity-100",
                     showReport ? "opacity-20 blur-sm scale-95 pointer-events-none -translate-y-20 h-0 overflow-hidden !pb-0 !pt-0" : ""
                 )}>
-                    <div className="text-center mb-20 animate-fade-in">
-                        <h1 className="font-display text-7xl md:text-9xl font-light tracking-tight mb-4 leading-none uppercase">
-                            Analyze<br />
-                            <span className="italic pl-12 md:pl-24 normal-case font-display">Workspace</span>
+                    <div className="mb-20 animate-hero">
+                        <span className="font-mono text-[10px] tracking-[0.35em] text-cream/40 uppercase block mb-10">Audit Portal v2.0</span>
+                        <h1 className="font-display text-7xl md:text-9xl font-medium tracking-tighter leading-[0.88] uppercase">
+                            Audit<br />
+                            <em className="not-italic text-cream/40">Workspace</em>
                         </h1>
                     </div>
 
-                    <div className="max-w-3xl mx-auto animate-fade-in [animation-delay:200ms]">
+                    <div className="max-w-4xl animate-hero animate-hero-d2">
                         <div className="flex flex-col gap-12">
-                            <div className="relative group focus-glow rounded-lg p-4 -m-4 transition-all duration-700">
-                                <div className="animated-underline w-full">
+                            <div className="relative group p-0 transition-all duration-700">
+                                <div className="w-full">
                                     <input
-                                        className="w-full h-20 text-3xl font-display bg-transparent border-0 border-b border-charcoal/20 focus:ring-0 focus:border-charcoal transition-all placeholder:text-slate-300 outline-none"
-                                        placeholder="Paste website URL here"
+                                        className="w-full h-24 text-3xl md:text-5xl font-display bg-transparent border-0 border-b border-white/10 focus:ring-0 focus:border-cream transition-all placeholder:text-white/10 outline-none"
+                                        placeholder="Paste product URL"
                                         type="text"
                                         value={url}
                                         onChange={(e) => setUrl(e.target.value)}
@@ -133,28 +134,28 @@ const Analyze = () => {
                                 </div>
                                 <button
                                     onClick={handleAnalyze}
-                                    className="absolute right-4 bottom-8 text-xs uppercase tracking-[0.3em] font-black text-primary hover:text-charcoal transition-all duration-500 hover-slide"
+                                    className="absolute right-0 bottom-8 font-mono text-[10px] uppercase tracking-[0.3em] text-primary hover:text-cream transition-all duration-500"
                                 >
-                                    Analyze <span className="material-symbols-outlined align-middle ml-2">arrow_right_alt</span>
+                                    Initialize Audit →
                                 </button>
                             </div>
 
                             {error && (
-                                <div className="mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-[10px] font-black uppercase tracking-[0.2em] animate-fade-in text-center">
-                                    [#] {error} — Reverting to Cached Analysis
+                                <div className="mt-4 p-4 border border-primary/20 text-primary font-mono text-[9px] uppercase tracking-[0.2em] animate-fade-in">
+                                    [#] {error} — Reverting to Cached Core
                                 </div>
                             )}
 
-                            <div className="flex flex-col md:flex-row items-baseline gap-8 animate-fade-in [animation-delay:400ms]">
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Tone Selection</span>
-                                <div className="flex flex-wrap gap-x-8 gap-y-4">
+                            <div className="flex flex-col md:flex-row items-baseline gap-10 animate-hero animate-hero-d3">
+                                <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-cream/30">Critique Lens</span>
+                                <div className="flex flex-wrap gap-x-10 gap-y-4">
                                     {tones.map((t) => (
                                         <button
                                             key={t}
                                             onClick={() => setTone(t)}
                                             className={cn(
-                                                "text-xs uppercase tracking-widest font-bold transition-all animated-underline",
-                                                tone === t ? "text-primary after:!w-full" : "opacity-40 hover:opacity-100"
+                                                "font-mono text-[10px] uppercase tracking-widest transition-all nav-link",
+                                                tone === t ? "text-primary after:!w-full" : "text-cream/40 hover:text-cream"
                                             )}
                                         >
                                             {t}
@@ -166,160 +167,139 @@ const Analyze = () => {
                     </div>
                 </section>
 
-                {/* Loading State - Perception of Cogntion */}
+                {/* Loading State */}
                 {isLoading && (
-                    <section className="fixed inset-0 z-40 flex flex-col items-center justify-center space-y-12 animate-in fade-in duration-1000 bg-cream/90 backdrop-blur-md">
-                        <div className="relative w-24 h-24">
-                            <div className="absolute inset-0 border border-primary/20 rounded-full"></div>
-                            <div className="absolute inset-0 border-t border-primary rounded-full animate-spin"></div>
+                    <section className="fixed inset-0 z-40 flex flex-col items-center justify-center space-y-12 bg-ink/90 backdrop-blur-md">
+                        <div className="relative w-32 h-32">
+                            <div className="absolute inset-0 border border-white/5 rounded-full"></div>
+                            <div className="absolute inset-0 border-t border-primary rounded-full animate-spin-slow"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="font-mono text-[8px] text-primary animate-pulse uppercase tracking-[0.2em]">Crawling</span>
+                            </div>
                         </div>
-                        <p className="font-display text-3xl italic text-charcoal/80 animate-pulse tracking-wide">Taking a second look...</p>
-
-                        <div className="w-full max-w-md h-0.5 bg-charcoal/5 relative overflow-hidden">
+                        <p className="font-display text-4xl italic text-cream/80 animate-pulse tracking-tight">Detecting drift...</p>
+                        <div className="w-full max-w-xs h-px bg-white/5 relative overflow-hidden">
                             <div className="absolute inset-0 bg-primary/40 animate-[underline-draw_2.5s_linear_infinite]"></div>
                         </div>
                     </section>
                 )}
 
-                {/* The Dossier - Mock Report Render */}
+                {/* The Audit Report */}
                 {showReport && reportData && !isLoading && (
                     <section
                         ref={reportRef}
-                        className="w-full bg-white py-32 border-t border-black/5 animate-in fade-in slide-in-from-bottom-20 duration-[1500ms] ease-out shadow-2xl z-10 relative scroll-mt-20"
+                        className="w-full bg-ink py-32 border-t border-white/5 animate-hero z-10 relative scroll-mt-20"
                     >
-                        <div className="max-w-5xl mx-auto px-6">
-                            <div className="mb-32 relative">
-                                <div className="flex justify-between items-end mb-12">
-                                    <span className="text-xs font-bold uppercase tracking-[0.4em] text-slate-400">Report No. {reportData.id}</span>
-                                    <span className="text-xs font-bold uppercase tracking-[0.2em]">{reportData.timestamp}</span>
+                        <div className="max-w-6xl mx-auto px-6">
+                            <div className="mb-32">
+                                <div className="flex justify-between items-end mb-16 border-b border-white/5 pb-8">
+                                    <div>
+                                        <span className="font-mono text-[9px] tracking-[0.4em] text-cream/30 uppercase block mb-2">Report ID</span>
+                                        <span className="font-mono text-[11px] text-cream/60">{reportData.id}</span>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="font-mono text-[9px] tracking-[0.4em] text-cream/30 uppercase block mb-2">Timestamp</span>
+                                        <span className="font-mono text-[11px] text-cream/60">{reportData.timestamp}</span>
+                                    </div>
                                 </div>
-                                <div className="relative">
-                                    <h2 className="font-display text-6xl md:text-8xl font-medium leading-[0.9] uppercase tracking-tighter mb-4">
-                                        UX Teardown<br />
-                                        <span className="text-primary italic normal-case">{reportData.siteName}</span>
-                                    </h2>
-                                    <div className="relative mt-12 aspect-[16/8] w-full overflow-hidden bg-slate-100 border border-black/5 rounded-sm shadow-inner group">
-                                        {/* CSS Grid Pattern for robustness */}
-                                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-
-                                        <div className="absolute top-6 left-6 flex items-center gap-3">
-                                            <div className="w-2 h-2 bg-primary animate-pulse rounded-full"></div>
-                                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-charcoal/40">Interface Scan / Active</span>
+                                
+                                <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-20 items-end">
+                                    <div>
+                                        <h2 className="font-display text-6xl md:text-[7rem] font-medium leading-[0.9] uppercase tracking-tighter mb-8">
+                                            System Audit<br />
+                                            <span className="text-primary italic normal-case">{reportData.siteName}</span>
+                                        </h2>
+                                    </div>
+                                    <div className="border border-white/10 p-6 relative group overflow-hidden">
+                                        <div className="scan-line" />
+                                        <div className="aspect-[16/10] bg-white/[0.02] flex items-center justify-center">
+                                            <img
+                                                className="w-full h-full object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-[2000ms]"
+                                                src={`https://api.microlink.io?url=${encodeURIComponent(reportData.url)}&screenshot=true&embed=screenshot.url&waitFor=5000`}
+                                                alt={`Preview ${reportData.siteName}`}
+                                            />
                                         </div>
-
-                                        {/* Functional Image - dynamic live preview from Microlink */}
-                                        <img
-                                            className="w-full h-full object-cover grayscale-[0.5] hover:grayscale-0 transition-all duration-[2000ms] scale-105 group-hover:scale-100"
-                                            src={`https://api.microlink.io?url=${encodeURIComponent(reportData.url)}&screenshot=true&embed=screenshot.url&waitFor=5000`}
-                                            alt={`Live preview of ${reportData.siteName}`}
-                                            onLoad={(e) => {
-                                                e.target.style.opacity = '1';
-                                                e.target.previousElementSibling.style.display = 'none'; // Hide placeholder icon
-                                            }}
-                                            onError={(e) => {
-                                                e.target.style.display = 'none';
-                                            }}
-                                            style={{ opacity: 0, transition: 'opacity 1s ease-in' }}
-                                        />
-
-                                        {/* Scanning Overlay UI */}
-                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                            <div className="w-[94%] h-[90%] border border-primary/10 transition-all duration-700 group-hover:w-full group-hover:h-full"></div>
-                                            <div className="absolute top-1/2 left-0 w-full h-[1px] bg-primary/5"></div>
-                                            <div className="absolute left-1/2 top-0 w-[1px] h-full bg-primary/5"></div>
-
-                                            {/* Coordinate Markers */}
-                                            <div className="absolute top-4 right-4 text-[8px] font-mono text-charcoal/20">X: 729.1 Y: 402.0</div>
-                                            <div className="absolute bottom-4 left-4 text-[8px] font-mono text-charcoal/20 tracking-[0.2em]">ANALYSIS_MOUNT_POINT: 0x2A</div>
+                                        <div className="mt-4 flex justify-between items-center">
+                                            <span className="font-mono text-[8px] tracking-widest text-cream/20 uppercase">Live Surface Preview</span>
+                                            <span className="font-mono text-[8px] text-primary/40">0x2A_MOUNT</span>
                                         </div>
-
-                                        {/* Scanning bar animation */}
-                                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/20 to-transparent animate-[scan_4s_ease-in-out_infinite] opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-40">
-                                {/* Summary Section */}
-                                <div className="max-w-3xl">
-                                    <div className="flex gap-4 mb-8">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Section I</span>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">Executive Summary</span>
+                            <div className="space-y-48">
+                                {/* Executive Summary */}
+                                <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-12 lg:gap-20">
+                                    <span className="font-mono text-[10px] tracking-[0.4em] text-primary uppercase pt-4">Section 01</span>
+                                    <div className="max-w-3xl">
+                                        <h3 className="font-display text-4xl md:text-5xl italic leading-tight text-cream/90 mb-10">
+                                            "{reportData.summary}"
+                                        </h3>
                                     </div>
-                                    <h3 className="font-display text-4xl mb-12 italic border-l-4 border-primary pl-8 leading-snug text-charcoal/90">
-                                        "{reportData.summary}"
-                                    </h3>
                                 </div>
 
-                                {/* First Impressions */}
-                                <div className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start">
-                                    <div className="md:col-span-4 sticky top-32">
-                                        <h3 className="font-display text-5xl mb-4 leading-tight uppercase tracking-tighter">First<br /><span className="italic normal-case">Impressions</span></h3>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Section II</span>
-                                    </div>
-                                    <div className="md:col-span-8">
-                                        <p className="text-xl font-display leading-relaxed text-slate-700 mb-12">
-                                            {reportData.firstImpression}
-                                        </p>
-                                        <div className="space-y-6">
+                                {/* Component Signals */}
+                                <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-12 lg:gap-20">
+                                    <span className="font-mono text-[10px] tracking-[0.4em] text-cream/30 uppercase pt-4">Section 02</span>
+                                    <div>
+                                        <h3 className="font-display text-5xl mb-16 leading-tight uppercase tracking-tighter">Surface<br /><span className="italic normal-case text-cream/40">Drift Signals</span></h3>
+                                        <div className="space-y-0">
                                             {reportData.review.map((item, idx) => (
-                                                <div key={idx} className="border-t border-black/10 pt-4 flex flex-col md:flex-row justify-between group cursor-default">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-xs font-bold uppercase tracking-widest text-primary">{item.label}</span>
-                                                        <span className="text-[10px] uppercase tracking-widest opacity-40 font-bold">{item.status}</span>
+                                                <div key={idx} className="border-t border-white/10 py-10 grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 group">
+                                                    <div className="space-y-2">
+                                                        <span className="font-mono text-[10px] tracking-widest text-primary uppercase block">{item.label}</span>
+                                                        <span className="font-mono text-[9px] uppercase tracking-widest text-cream/20 font-bold">{item.status}</span>
                                                     </div>
-                                                    <p className="text-sm max-w-xs md:text-right opacity-60 group-hover:opacity-100 transition-opacity mt-2 md:mt-0">{item.detail}</p>
+                                                    <p className="font-sans font-light text-cream/50 text-sm leading-relaxed group-hover:text-cream/80 transition-colors">
+                                                        {item.detail}
+                                                    </p>
                                                 </div>
                                             ))}
+                                            <div className="border-t border-white/10" />
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Strategic Improvements */}
-                                <div className="bg-primary text-white -mx-6 md:-mx-12 p-12 md:p-24 relative overflow-hidden">
-                                    <CircularText
-                                        text="Strategic Improvements • Actionable Insights • Design Systems"
-                                        className="absolute -bottom-20 -right-20 opacity-10 fill-white"
-                                        size={320}
-                                        duration={25}
-                                    />
-                                    <div className="max-w-2xl relative z-10">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.5em] mb-12 block opacity-60">Section III / Recommendations</span>
-                                        <h3 className="font-display text-6xl italic mb-16">The Path Forward</h3>
-                                        <ul className="space-y-12">
-                                            {reportData.suggestions.map((s, idx) => (
-                                                <li key={idx} className="group">
-                                                    <span className="block text-xs uppercase tracking-widest font-bold mb-4 opacity-50">{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
-                                                    <p className="font-display text-3xl leading-snug">{s}</p>
-                                                </li>
-                                            ))}
-                                        </ul>
+                                {/* Strategic Recommendations */}
+                                <div className="bg-white/[0.02] -mx-6 md:-mx-16 p-12 md:p-32 border-y border-white/5 relative overflow-hidden">
+                                    <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-12 lg:gap-20 relative z-10">
+                                        <span className="font-mono text-[10px] tracking-[0.4em] text-primary uppercase pt-4">Section 03</span>
+                                        <div className="max-w-4xl">
+                                            <h3 className="font-display text-6xl italic mb-20 tracking-tight">The Path Forward</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-16">
+                                                {reportData.suggestions.map((s, idx) => (
+                                                    <div key={idx} className="group">
+                                                        <span className="block font-mono text-[10px] uppercase tracking-[0.3em] mb-6 text-cream/20">REC {idx + 1 < 10 ? `0${idx + 1}` : idx + 1}</span>
+                                                        <p className="font-display text-2xl leading-tight text-cream/70 group-hover:text-cream transition-colors">{s}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Detailed Narrative */}
-                                <div className="max-w-3xl">
-                                    <h3 className="font-display text-4xl mb-12 italic border-l-4 border-emerald-800/20 pl-8 leading-snug text-slate-600">
-                                        "{reportData.quote}"
-                                    </h3>
-                                    <div className="flex gap-4">
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-emerald-800">Section IV</span>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.4em]">Final Conclusion</span>
+                                {/* Conclusion */}
+                                <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-12 lg:gap-20 items-center">
+                                    <span className="font-mono text-[10px] tracking-[0.4em] text-cream/30 uppercase">Final</span>
+                                    <div className="max-w-3xl border-l border-primary/30 pl-10 py-4">
+                                        <p className="font-display text-3xl italic leading-relaxed text-cream/50">
+                                            "{reportData.quote}"
+                                        </p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="mt-32 pt-20 border-t border-black/10 flex flex-col md:flex-row justify-between items-end gap-12">
+                            <div className="mt-48 pt-20 border-t border-white/5 flex flex-col md:flex-row justify-between items-end gap-12">
                                 <div>
-                                    <h2 className="font-display text-5xl mb-2 uppercase tracking-tighter">Conclusion</h2>
-                                    <p className="text-xs uppercase tracking-widest font-bold opacity-40">Document ID: {reportData.id} / End of Analysis</p>
+                                    <h2 className="font-display text-5xl mb-4 uppercase tracking-tighter">End of Report</h2>
+                                    <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-cream/20">SL-DOSS-VERIFIED // {reportData.id}</p>
                                 </div>
-                                <div className="flex gap-4 w-full md:w-auto">
-                                    <button className="flex-1 md:flex-none px-10 py-5 border border-black text-xs uppercase tracking-widest font-black hover:bg-black hover:text-white transition-all">
-                                        Share Dossier
+                                <div className="flex flex-col sm:flex-row gap-5 w-full md:w-auto">
+                                    <button className="px-10 py-5 border border-white/10 text-cream/60 font-mono text-[10px] uppercase tracking-[0.25em] hover:border-cream/40 hover:text-cream transition-all">
+                                        Share Report
                                     </button>
-                                    <button className="flex-1 md:flex-none px-12 py-5 bg-black text-white text-xs uppercase tracking-widest font-black hover:bg-primary transition-all shadow-xl hover:-translate-y-1 active:translate-y-0">
-                                        Download Dossier (PDF)
+                                    <button className="btn-primary px-10 py-5 bg-cream text-ink font-mono text-[10px] uppercase tracking-[0.25em] font-bold">
+                                        <span>Export PDF</span>
                                     </button>
                                 </div>
                             </div>
